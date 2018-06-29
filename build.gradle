@@ -1,0 +1,54 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.2'
+        
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    // Project versions, not used
+    versionCode = 15302
+    versionName = "1.5.3 (2)"
+
+    // Sdk versions
+    minSdkVersion = 16
+    targetSdkVersion = 27
+    compileSdkVersion = 27
+
+    // Dependency versions
+    supportLibraryVersion = '27.1.1'
+    supportMultidexVersion = '1.0.3'
+    constrainLayoutVersion = '1.1.2'
+    okHttpVersion = '2.7.5'
+    rxJavaVersion = '1.1.6'
+    rxAndroidVersion = '1.2.1'
+    universalImageLoaderVersion = '1.9.5'
+    gsonVersion = '2.8.0'
+    stethoVersion = '1.5.0'
+
+    // Test Dependency versions
+    junitVersion = '4.12'
+    testRunnerVersion = '1.0.2'
+    testRulerVersion = '1.0.2'
+}
