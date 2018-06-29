@@ -5,33 +5,25 @@ import com.ncl.plugin.analytics.AnalyticsInitInfo;
 import com.ncl.plugin.analytics.AnalyticsPlugin;
 
 
-public class AnalyticsManager implements AnalyticsPlugin {
+public class AnalyticsManager {
 
-    private static AnalyticsManager analyticsManager = new AnalyticsManager();
-    private static AnalyticsPlugin analyticsPlugin;
+    private AnalyticsPlugin analyticsPlugin;
 
 
-    private AnalyticsManager() {
-        analyticsPlugin = PluginManager.instance().newAnalyticsPlugin();
+    /* package */ AnalyticsManager(PluginManager pluginManager) {
+        analyticsPlugin = pluginManager.newAnalyticsPlugin();
     }
 
-    public static AnalyticsManager instance() {
-        return analyticsManager;
-    }
-
-    @Override
     public void init(AnalyticsInitInfo initInfo) {
-
+        analyticsPlugin.init(initInfo);
     }
 
-    @Override
     public void sendEvent(String eventName) {
-
+        analyticsPlugin.sendEvent(eventName);
     }
 
-    @Override
     public void dispose(AnalyticsDisposeInfo analyticsDisposeInfo) {
-
+        analyticsPlugin.dispose(analyticsDisposeInfo);
     }
 
 }

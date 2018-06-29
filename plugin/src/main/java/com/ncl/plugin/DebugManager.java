@@ -1,31 +1,30 @@
 package com.ncl.plugin;
 
 import android.content.Context;
+import android.support.annotation.VisibleForTesting;
 import com.ncl.plugin.debug.DebugPlugin;
 import com.squareup.okhttp.OkHttpClient;
 
 
-public class DebugManager implements DebugPlugin {
+public class DebugManager {
 
-    private static DebugManager debugManager = new DebugManager();
-    private static DebugPlugin debugPlugin;
+    private DebugPlugin debugPlugin;
 
-    private DebugManager() {
-        debugPlugin = PluginManager.instance().newDebugPlugin();
+
+    /* package */ DebugManager(PluginManager pluginManager) {
+        debugPlugin = pluginManager.newDebugPlugin();
     }
 
-    public static DebugManager instance() {
-        return debugManager;
-    }
-
-    @Override
     public void init(Context context) {
         debugPlugin.init(context);
     }
 
-    @Override
     public void onBindToOkHttpClient(OkHttpClient okHttpClient) {
         debugPlugin.onBindToOkHttpClient(okHttpClient);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public DebugPlugin getDebugPlugin() {
+        return debugPlugin;
+    }
 }

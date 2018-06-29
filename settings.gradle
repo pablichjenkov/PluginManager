@@ -1,1 +1,3 @@
-include ':app', ':plugin', ':stetho-debug'
+include ':app',
+        ':stetho-debug',
+        ':plugin'

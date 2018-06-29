@@ -1,15 +1,18 @@
 apply plugin: 'com.android.application'
+import groovy.json.JsonSlurper
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.compileSdkVersion
+
     defaultConfig {
         applicationId "com.ncl.pluginmanager"
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -18,11 +21,78 @@ android {
     }
 }
 
+// Plugin System script. Copy this code in your project until a Gradle plugin be created
+def pluginDependencies = new ArrayList<String>()
+File configFile = getConfigFile()
+
+if (configFile != null) {
+
+    configFile.withReader { reader ->
+        def jsonObj = new JsonSlurper().parse(reader)
+        def pluginList = jsonObj.getAt("pluginList")
+
+        pluginList.each { jObj ->
+            def gradleCoord = jObj.getAt("gradleCoordinate")
+
+            if (!gradleCoord.equals("local")) {
+                println ("Adding dependency: " + gradleCoord)
+                pluginDependencies.add(gradleCoord)
+            }
+
+            def externalDependencyList = jObj.getAt("externalDependencyGradleCoordinateList")
+
+            externalDependencyList.each { coordinate ->
+                println ("Adding external dependency: " + coordinate)
+                pluginDependencies.add(coordinate)
+            }
+        }
+    }
+}
+
 dependencies {
+
+    // Add Plugin Dependencies
+    implementation pluginDependencies
+
+    // Local Jars
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0-alpha3'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    // Plugin Manager
+    implementation project(':plugin')
+
+    // Plugin Manager
+    implementation project(':stetho-debug')
+
+    // Support Library
+    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
+    implementation "com.android.support.constraint:constraint-layout:$rootProject.constrainLayoutVersion"
+
+    // Test
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$rootProject.testRunnerVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.expressoVersion"
+}
+
+File getConfigFile() {
+
+    // Try the assets folder first
+    File file = new File(project.projectDir, 'src/main/assets/plugin_config.json' )
+    if(file.exists()) {
+        println("Config file found in the main/assets folder")
+
+        return file
+    }
+
+    // Try the res/raw folder second
+    file = new File(project.projectDir, 'src/main/res/raw/plugin_config.json' )
+    if(file.exists()) {
+        println("Config file found in the main/res/raw folder")
+
+        return file
+    }
+
+    println("Config file not found. The PluginManager will return only Default Plugin Implementations")
+
+    return null
 }

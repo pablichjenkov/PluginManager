@@ -1,6 +1,7 @@
 package com.ncl.plugin;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -19,49 +20,48 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 
 
 public class PluginManager {
 
-    private static PluginManager sPluginManager;
+    private static HashMap<Class<?>, Object> serviceSingletonCache = new HashMap<>();
+    private Context context;
+    private String pluginConfigFilePath = "plugin_config.json";
     private EnumMap<PluginInfo.Type, List<PluginFactory>> pluginRegistryByType;
 
 
-    public PluginManager() {
+    public PluginManager(Context context) {
+        this.context = context;
         pluginRegistryByType = new EnumMap<>(PluginInfo.Type.class);
+
+        serviceSingletonCache.clear();
+        init();
     }
 
-    public static PluginManager instance() {
-        if (sPluginManager == null) {
-            synchronized (PluginManager.class) {
-                if (sPluginManager == null) {
-                    sPluginManager = new PluginManager();
-                }
-            }
-        }
-        return sPluginManager;
+    public PluginManager(Context context, String pluginConfigFilePath) {
+        this.context = context;
+        this.pluginConfigFilePath = pluginConfigFilePath;
+        pluginRegistryByType = new EnumMap<>(PluginInfo.Type.class);
+
+        init();
     }
 
-    public void dispose() {
-        sPluginManager = null;
-    }
+    private void init() {
 
-    public void init(Context context) {
-
-        // TODO(pablo): Create plugins tests mock
-        PluginConfiguration pluginConfiguration = loadPlugins(context);
+        PluginConfiguration pluginConfiguration = loadPluginConfigurationFile();
 
         if (pluginConfiguration == null) {
             Log.e("PluginManager", "Error initializing PluginManager, make sure a file " +
-                    "named: plugin_config.json exist under res/raw directory and is valid json formatted.");
+                    "named: "+ pluginConfigFilePath+ " exist either in the asset directory or " +
+                    "under res/raw directory, and make sure it is formatted in json.");
 
             return;
         }
 
         for (PluginInfo plugin : pluginConfiguration.pluginList) {
 
-            // TODO(pablo): Abstract this logic to the PluginInstanceCreator interface
             if (PluginInfo.Type.Analytics.equals(plugin.type)) {
 
                 List<PluginFactory> analyticsPlugins
@@ -98,6 +98,46 @@ public class PluginManager {
 
             }
         }
+    }
+
+    public AnalyticsManager getAnalyticsManager() {
+
+        // It is safe to cast here since we only instances of AnalyticsManager class in the map
+        AnalyticsManager analyticsManager = (AnalyticsManager)serviceSingletonCache.get(AnalyticsManager.class);
+
+        if (analyticsManager == null) {
+            analyticsManager = new AnalyticsManager(this);
+            serviceSingletonCache.put(AnalyticsManager.class, analyticsManager);
+        }
+
+        return analyticsManager;
+    }
+
+    public DebugManager getDebugToolManager() {
+
+        // It is safe to cast here since we only instances of DebugManager class in the map
+        DebugManager debugManager = (DebugManager)serviceSingletonCache.get(DebugManager.class);
+
+        if (debugManager == null) {
+            debugManager = new DebugManager(this);
+            serviceSingletonCache.put(DebugManager.class, debugManager);
+        }
+
+        return debugManager;
+    }
+
+    public ImageLoaderManager getImageLoaderManager() {
+
+        // It is safe to cast here since we only instances of ImageLoaderManager class in the map
+        ImageLoaderManager imageLoaderManager =
+                (ImageLoaderManager)serviceSingletonCache.get(ImageLoaderManager.class);
+
+        if (imageLoaderManager == null) {
+            imageLoaderManager = new ImageLoaderManager(this);
+            serviceSingletonCache.put(ImageLoaderManager.class, imageLoaderManager);
+        }
+
+        return imageLoaderManager;
     }
 
     /* package */ AnalyticsPlugin newAnalyticsPlugin() {
@@ -149,14 +189,23 @@ public class PluginManager {
         return null;
     }
 
-    private PluginConfiguration loadPlugins(Context context) {
+    private PluginConfiguration loadPluginConfigurationFile() {
         try {
-            InputStream ins = context.getResources().openRawResource(
-                    context.getResources()
-                            .getIdentifier("plugin_config", "raw", context.getPackageName()));
+
+            AssetManager manager = context.getAssets();
+            InputStream inputStream = manager.open(pluginConfigFilePath);
+
+            if (inputStream == null) {
+
+                String rawFilePath = pluginConfigFilePath.replace(".json", "");
+
+                inputStream = context.getResources().openRawResource(
+                        context.getResources()
+                                .getIdentifier(rawFilePath, "raw", context.getPackageName()));
+            }
 
             Gson gson = new GsonBuilder().create();
-            Reader reader = new InputStreamReader(ins, "UTF-8");
+            Reader reader = new InputStreamReader(inputStream, "UTF-8");
 
             return gson.fromJson(reader, PluginConfiguration.class);
 
