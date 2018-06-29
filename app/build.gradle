@@ -51,17 +51,9 @@ if (configFile != null) {
 
 dependencies {
 
-    // Add Plugin Dependencies
-    implementation pluginDependencies
-
-    // Local Jars
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    // Plugin Manager
+    // Plugin Manager and all dependencies collected from plugin_config.json
     implementation project(':plugin')
-
-    // Plugin Manager
-    implementation project(':stetho-debug')
+    implementation pluginDependencies
 
     // Support Library
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
