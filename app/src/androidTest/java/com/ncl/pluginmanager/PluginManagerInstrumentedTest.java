@@ -3,13 +3,10 @@ package com.ncl.pluginmanager;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-
 import com.ncl.plugin.DebugManager;
 import com.ncl.plugin.PluginManager;
 import com.ncl.plugin.debug.DebugPlugin;
 import com.ncl.plugin.debug.DefaultDebugPlugin;
-import com.ncl.plugin.debug.stetho.StethoDebugPlugin;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -43,7 +40,7 @@ public class PluginManagerInstrumentedTest {
      * it when asked.
      * */
     @Test
-    public void test_StethoDebugPlugin() {
+    public void test_NoDefaultDebugPluginIsReturned() {
 
         Context appContext = getAppContext();
 
@@ -54,12 +51,12 @@ public class PluginManagerInstrumentedTest {
         // Check the debugPlugin is not null
         assertNotNull(debugManager);
 
-        Class<StethoDebugPlugin> stethoDebugPluginClass = StethoDebugPlugin.class;
+        Class<DefaultDebugPlugin> defaultDebugPluginClass = DefaultDebugPlugin.class;
 
         DebugPlugin debugPluginInstance = debugManager.getDebugPlugin();
 
-        // Check a debugPlugin class instance was returned
-        assertEquals(stethoDebugPluginClass, debugPluginInstance.getClass());
+        // Check the debugPlugin class instance does not match the De
+        assertNotEquals(defaultDebugPluginClass, debugPluginInstance.getClass());
     }
 
     /**
