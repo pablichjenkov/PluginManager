@@ -17,6 +17,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         google()
         jcenter()
         maven { url 'https://jitpack.io' }
@@ -30,7 +31,7 @@ task clean(type: Delete) {
 ext {
     // Project versions, not used
     versionCode = 1
-    versionName = '1.0.3'
+    versionName = '1.0.5'
 
     // Sdk versions
     minSdkVersion = 16
