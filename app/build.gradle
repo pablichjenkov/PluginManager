@@ -53,7 +53,7 @@ dependencies {
 
     // Plugin Manager and all dependencies collected from plugin_config.json
     //implementation project(':plugin')
-    implementation 'com.github.pablichjenkov:PluginManager:-SNAPSHOT'
+    implementation 'com.github.pablichjenkov:PluginManager:1.0.0'
     implementation pluginDependencies
 
     // Support Library
