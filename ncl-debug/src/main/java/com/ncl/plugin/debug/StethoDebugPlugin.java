@@ -1,4 +1,4 @@
-package com.ncl.plugin.debug.ncldebug;
+package com.ncl.plugin.debug;
 
 import android.content.Context;
 import com.facebook.stetho.Stetho;

@@ -4,21 +4,21 @@
       "type": "ImageLoader",
       "className": "com.intervalintl.android.poc.plugin.plugin.imageloader.glide.GlidePlugin",
       "id": "Glide Plugin",
-      "gradleCoordinate":"local",
+      "gradleCoordinate":"local_dev",
       "externalDependencyGradleCoordinateList":["com.github.bumptech.glide:glide:4.0.0-RC1"]
     },
     {
       "type": "Analytics",
       "className": "com.intervalintl.android.poc.plugin.plugin.analytics.hockey.HockeyAnalyticsPlugin",
       "id": "Hockey Plugin",
-      "gradleCoordinate":"local",
+      "gradleCoordinate":"local_dev",
       "externalDependencyGradleCoordinateList":["net.hockeyapp.android:HockeySDK:4.1.5"]
     },
     {
       "type": "Debug",
-      "className": "com.ncl.plugin.debug.stetho.StethoDebugPlugin",
+      "className": "com.ncl.plugin.debug.StethoDebugPlugin",
       "id": "Stetho Plugin",
-      "gradleCoordinate":"local",
+      "gradleCoordinate":"local_dev",
       "externalDependencyGradleCoordinateList":[
         "com.squareup.okhttp:okhttp:2.7.5",
         "com.squareup.okhttp:logging-interceptor:2.7.5",
