@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 import groovy.json.JsonSlurper
 
+
 android {
     compileSdkVersion rootProject.compileSdkVersion
 
@@ -34,7 +35,7 @@ if (configFile != null) {
         pluginList.each { jObj ->
             def gradleCoord = jObj.getAt("gradleCoordinate")
 
-            if (!gradleCoord.equals("local")) {
+            if (!gradleCoord.equals("local_dev")) {
                 println ("Adding dependency: " + gradleCoord)
                 pluginDependencies.add(gradleCoord)
             }

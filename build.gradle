@@ -33,7 +33,7 @@ task clean(type: Delete) {
 ext {
     // Project versions, not used
     versionCode = 1
-    versionName = '1.0.6'
+    versionName = '1.0.7'
 
     // Sdk versions
     minSdkVersion = 16

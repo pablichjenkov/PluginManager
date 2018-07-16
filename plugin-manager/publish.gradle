@@ -1,8 +1,10 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
+
 version = rootProject.versionName
 group 'com.ncl'
+
 
 publishing {
     publications {

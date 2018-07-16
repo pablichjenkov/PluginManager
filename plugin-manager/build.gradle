@@ -1,7 +1,5 @@
 apply plugin: 'com.android.library'
 
-group 'com.ncl'
-
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
