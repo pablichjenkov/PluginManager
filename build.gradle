@@ -8,7 +8,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -20,6 +21,7 @@ allprojects {
         mavenLocal()
         google()
         jcenter()
+        maven { url 'https://dl.bintray.com/pablichjenkov/maven' }
         maven { url 'https://jitpack.io' }
     }
 }
@@ -31,7 +33,7 @@ task clean(type: Delete) {
 ext {
     // Project versions, not used
     versionCode = 1
-    versionName = '1.0.5'
+    versionName = '1.0.6'
 
     // Sdk versions
     minSdkVersion = 16

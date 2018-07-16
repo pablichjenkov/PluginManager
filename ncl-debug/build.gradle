@@ -1,8 +1,5 @@
 apply plugin: 'com.android.library'
 
-group 'com.ncl'
-
-
 android {
     compileSdkVersion rootProject.compileSdkVersion
 
@@ -11,7 +8,9 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.versionCode
         versionName rootProject.versionName
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -25,19 +24,28 @@ android {
 
 dependencies {
 
+    // Local Jars
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Plugin Manager
+    implementation project(':plugin-manager')
+
     // AndroidSupport
     implementation "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
 
     // Square TODO(Pablo): Update to Okhttp3
     implementation "com.squareup.okhttp:okhttp:$rootProject.okHttpVersion"
+    implementation "com.squareup.okhttp:logging-interceptor:$rootProject.okHttpVersion"
 
-    // Utils
-    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+    // Stetho
+    implementation "com.facebook.stetho:stetho:$rootProject.stethoVersion"
+    implementation "com.facebook.stetho:stetho-okhttp:$rootProject.stethoVersion"
 
     // Test
     testImplementation "junit:junit:$rootProject.junitVersion"
     androidTestImplementation "com.android.support.test:runner:$rootProject.testRunnerVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.expressoVersion"
+    androidTestImplementation "com.android.support.test:rules:$rootProject.testRunnerVersion"
+    androidTestImplementation "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
 }
 
 

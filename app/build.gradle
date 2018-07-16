@@ -5,7 +5,7 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.ncl.pluginmanager"
+        applicationId "com.ncl.plugin.app"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.versionCode
@@ -52,9 +52,10 @@ if (configFile != null) {
 dependencies {
 
     // Plugin Manager and all dependencies collected from plugin_config.json
-    //implementation project(':plugin')
-    implementation 'com.github.pablichjenkov:PluginManager:1.0.5'
+    implementation project(':plugin-manager')
     implementation pluginDependencies
+
+    implementation project(':ncl-debug')
 
     // Support Library
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"

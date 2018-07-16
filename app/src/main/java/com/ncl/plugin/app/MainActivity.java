@@ -1,4 +1,4 @@
-package com.ncl.pluginmanager;
+package com.ncl.plugin.app;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

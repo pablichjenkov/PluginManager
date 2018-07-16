@@ -18,8 +18,10 @@
       "type": "Debug",
       "className": "com.ncl.plugin.debug.stetho.StethoDebugPlugin",
       "id": "Stetho Plugin",
-      "gradleCoordinate":"com.github.pablichjenkov:StethoDebugPlugin:1.0.5",
+      "gradleCoordinate":"local",
       "externalDependencyGradleCoordinateList":[
+        "com.squareup.okhttp:okhttp:2.7.5",
+        "com.squareup.okhttp:logging-interceptor:2.7.5",
         "com.facebook.stetho:stetho:1.5.0",
         "com.facebook.stetho:stetho-okhttp:1.5.0"
       ]
