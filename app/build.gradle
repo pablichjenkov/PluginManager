@@ -22,51 +22,78 @@ android {
     }
 }
 
-// Plugin System script. Copy this code in your project until a Gradle plugin be created
-def pluginDependencies = new ArrayList<String>()
+// Plugin Manager script starts
+
+def pluginDependenciesForRelease = new ArrayList<String>()
+def pluginDependenciesForDebug = new ArrayList<String>()
+def pluginDependenciesForTesting = new ArrayList<String>()
 File configFile = getConfigFile()
 
 if (configFile != null) {
 
     configFile.withReader { reader ->
+
         def jsonObj = new JsonSlurper().parse(reader)
         def pluginList = jsonObj.getAt("pluginList")
 
         pluginList.each { jObj ->
+
             def gradleCoord = jObj.getAt("gradleCoordinate")
+            def environment = jObj.getAt("environment")
+            def externalDependencyList = null
 
-            if (!gradleCoord.equals("local_dev")) {
-                println ("Adding dependency: " + gradleCoord)
-                pluginDependencies.add(gradleCoord)
+            // PROD: Use this keyword if you want to use this plugin in production/release
+            if (environment.equals("PROD")) {
+
+                // If you are developing your plugin code locally, you have to specify the field
+                // gradleCoord = local_dev. It won't mess up adding dependencies twice, one for the
+                // close jar version and the other from the open local project.
+                if (!gradleCoord.equals("local_dev")) {
+                    println ("Adding Production dependency: " + gradleCoord)
+                    pluginDependenciesForRelease.add(gradleCoord)
+
+                    externalDependencyList = jObj.getAt("externalDependencyGradleCoordinateList")
+
+                    externalDependencyList.each { coordinate ->
+                        println ("Adding Production external dependency: " + coordinate)
+                        pluginDependenciesForRelease.add(coordinate)
+                    }
+                }
+
+
+            } else if (environment.equals("DEBUG")) {
+                // DEBUG: Use this keyword if you want to use this plugin only in debug builds
+
+                if (!gradleCoord.equals("local_dev")) {
+                    println ("Adding Debug dependency: " + gradleCoord)
+                    pluginDependenciesForDebug.add(gradleCoord)
+
+                    externalDependencyList = jObj.getAt("externalDependencyGradleCoordinateList")
+
+                    externalDependencyList.each { coordinate ->
+                        println ("Adding Debug external dependency: " + coordinate)
+                        pluginDependenciesForDebug.add(coordinate)
+                    }
+                }
+
+            } else if (environment.equals("TEST")) {
+                // TEST: Use this keyword if you want to use this plugin only for unit testing
+
+                if (!gradleCoord.equals("local_dev")) {
+                    println ("Adding Test dependency: " + gradleCoord)
+                    pluginDependenciesForTesting.add(gradleCoord)
+
+                    externalDependencyList = jObj.getAt("externalDependencyGradleCoordinateList")
+
+                    externalDependencyList.each { coordinate ->
+                        println ("Adding Test external dependency: " + coordinate)
+                        pluginDependenciesForTesting.add(coordinate)
+                    }
+                }
             }
 
-            def externalDependencyList = jObj.getAt("externalDependencyGradleCoordinateList")
-
-            externalDependencyList.each { coordinate ->
-                println ("Adding external dependency: " + coordinate)
-                pluginDependencies.add(coordinate)
-            }
         }
     }
-}
-
-dependencies {
-
-    // Plugin Manager and all dependencies collected from plugin_config.json
-    implementation project(':plugin-manager')
-    implementation pluginDependencies
-
-    implementation project(':ncl-debug')
-
-    // Support Library
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
-    implementation "com.android.support.constraint:constraint-layout:$rootProject.constrainLayoutVersion"
-
-    // Test
-    testImplementation "junit:junit:$rootProject.junitVersion"
-    androidTestImplementation "com.android.support.test:runner:$rootProject.testRunnerVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.expressoVersion"
 }
 
 File getConfigFile() {
@@ -90,4 +117,42 @@ File getConfigFile() {
     println("Config file not found. The PluginManager will return only Default Plugin Implementations")
 
     return null
+}
+
+// Plugin Manager script ends
+
+
+dependencies {
+
+    // Plugin Manager and all dependencies collected from plugin_config.json
+    implementation project(':plugin-manager')
+
+    // Add Release plugin dependencies from plugin_config.json if more than one exist.
+    if (pluginDependenciesForRelease.size() > 0) {
+        implementation pluginDependenciesForRelease
+    }
+
+    // Add Debug plugin dependencies from plugin_config.json if more than one exist.
+    if (pluginDependenciesForDebug.size() > 0) {
+        debugImplementation pluginDependenciesForDebug
+    }
+
+    implementation project(':ncl-debug')
+
+    // Support Library
+    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
+    implementation "com.android.support.constraint:constraint-layout:$rootProject.constrainLayoutVersion"
+
+    // Test
+
+    // Adds plugin dependencies for testing if more than one exist.
+    if (pluginDependenciesForTesting.size() > 0) {
+        testImplementation pluginDependenciesForTesting
+        androidTestImplementation pluginDependenciesForTesting
+    }
+
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$rootProject.testRunnerVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.expressoVersion"
 }
